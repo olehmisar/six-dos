@@ -83,6 +83,13 @@ export class DeployerCached {
   clearContractCache(name) {
     storage.removeItem(this.getContractCacheKey(name));
   }
+
+  clearAllContractCaches() {
+    const keys = storage.keys();
+    for (const key of keys) {
+      storage.removeItem(key);
+    }
+  }
 }
 
 export const deployerCached = new DeployerCached();
@@ -131,6 +138,18 @@ const inMemoryStorage = {
       fs.writeFileSync(filename, JSON.stringify(data, null, 2));
     } catch (e) {
       throw new Error(`Failed to write to storage: ${e}`);
+    }
+  },
+
+  keys() {
+    try {
+      return Object.keys(
+        JSON.parse(
+          fs.existsSync(filename) ? fs.readFileSync(filename, "utf8") : "{}",
+        ),
+      );
+    } catch (e) {
+      throw new Error(`Failed to read storage: ${e}`);
     }
   },
 };
