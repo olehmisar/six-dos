@@ -25,17 +25,18 @@ contract Event {
     #[aztec(private)]
     #[aztec(initializer)]
     fn constructor(owner_address: AztecAddress, links_contract: AztecAddress, max_degree: Field) {
+        let broadcast = true;
         let mut owner_npk_m_hash = get_npk_m_hash(&mut context, owner_address);
         let mut owner_ivpk_m = get_ivpk_m(&mut context, owner_address);
         // ENCRYPT BOTH with the owner's public key
         storage.associate_degree_of.at(owner_address).initialize(
             &mut ValueNote::new(0, owner_npk_m_hash),
-            true,
+            broadcast,
             owner_ivpk_m
         );
         storage.owner_degree_of.at(owner_address).initialize(
             &mut ValueNote::new(0, owner_npk_m_hash),
-            true,
+            broadcast,
             owner_ivpk_m
         );
 
@@ -60,6 +61,7 @@ contract Event {
         let new_associate_degree = current_associate_degree + 1;
         assert(new_associate_degree as u64 <= storage.max_degree.read_private() as u64);
 
+        let broadcast = true;
         /////////////////////////////////////////////
         // ENCRYPT the degree of the new associate //
         // with the event owner's public key       //
@@ -69,7 +71,7 @@ contract Event {
         let owner_ivpk_m = get_ivpk_m(&mut context, owner);
         storage.owner_degree_of.at(new_associate).initialize(
             &mut ValueNote::new(new_associate_degree, owner_npk_m_hash),
-            true,
+            broadcast,
             owner_ivpk_m
         );
 
@@ -81,7 +83,7 @@ contract Event {
         let new_associate_ivpk_m = get_ivpk_m(&mut context, new_associate);
         storage.associate_degree_of.at(new_associate).initialize(
             &mut ValueNote::new(new_associate_degree, new_associate_npk_m_hash),
-            true,
+            broadcast,
             new_associate_ivpk_m
         );
     }

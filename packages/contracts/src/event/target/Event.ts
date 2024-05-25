@@ -137,22 +137,22 @@ max_degree: {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public override methods!: {
     
-    /** constructor(owner_address: struct, links_contract: struct, max_degree: field) */
-    constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike, max_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
     /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
     compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** assert_associated_with_me(new_associate: struct) */
     assert_associated_with_me: ((new_associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** associate_get_degree_of(associate: struct) */
-    associate_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** max_degree() */
+    max_degree: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** owner_get_degree_of(associate: struct) */
     owner_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** max_degree() */
-    max_degree: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** constructor(owner_address: struct, links_contract: struct, max_degree: field) */
+    constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike, max_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** associate_get_degree_of(associate: struct) */
+    associate_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

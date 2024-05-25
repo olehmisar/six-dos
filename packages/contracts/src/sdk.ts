@@ -33,7 +33,7 @@ export class SixDosSdk {
       .simulate()) as boolean;
     return await contracts.links
       .withWallet(from)
-      .methods.add_link(from.getAddress(), to, shouldInit)
+      .methods.add_link(to, shouldInit)
       .send()
       .wait();
   }

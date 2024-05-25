@@ -17,9 +17,8 @@ contract Links {
     fn constructor() {}
 
     #[aztec(private)]
-    fn add_link(from: AztecAddress, to: AztecAddress, is_init: bool) {
-        // TODO: use authwit
-        assert(context.msg_sender() == from);
+    fn add_link(to: AztecAddress, is_init: bool) {
+        let from = context.msg_sender();
 
         /////////////////////////////////////////////
         // ENCRYPT the link with `from` public key //
@@ -41,7 +40,8 @@ contract Links {
     #[aztec(private)]
     fn assert_linked_to(from: AztecAddress, to: AztecAddress) {
         let a_ivpk_m = get_ivpk_m(&mut context, from);
-        assert(storage.links.at(LinkKey { from, to }).get_note(true, a_ivpk_m).value == 1);
+        let broadcast = true;
+        assert(storage.links.at(LinkKey { from, to }).get_note(broadcast, a_ivpk_m).value == 1);
     }
 
     unconstrained fn link_exists(from: AztecAddress, to: AztecAddress) -> pub bool {
