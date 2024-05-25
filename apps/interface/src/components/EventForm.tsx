@@ -56,8 +56,8 @@ export const EventForm: FC = () => {
       <CardHeader>
         <CardTitle>Private Fundraiser</CardTitle>
         <CardDescription>
-          Friends of friends are welcome. Let a guest know of your intent to
-          come.
+          Friends of friends are welcome.
+          <br /> Who would you like to invite?
         </CardDescription>
       </CardHeader>
       <CardContent className="gap-4 flex flex-col">
