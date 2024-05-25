@@ -12,11 +12,11 @@ contract Links {
         // links: Map<AztecAddress, Map<AztecAddress, ValueNote>>,
         mock: Map<AztecAddress, PublicMutable<AztecAddress>>, // TODO: remove this
 
-        // proofs: Map<Field,  /
+        // proofs: Map<Field, MyStruct>
     }
 
     #[aztec(private)]
-    #[aztec(initiralizer)]
+    #[aztec(initializer)]
     fn constructor() {}
 
     #[aztec(private)]
@@ -28,8 +28,8 @@ contract Links {
 
     #[aztec(private)]
     fn prove_link(me: AztecAddress, you: AztecAddress) {
+        assert(context.msg_sender() == me);
         // assert(storage.links.at(me).at(you).read() == 1);
-        // storage.proofs.at(me).at(you).set(1);
     }
 
     // c.prove_link(b, c)

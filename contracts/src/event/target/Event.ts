@@ -27,19 +27,19 @@ import {
   Wallet,
   WrappedFieldLike,
 } from '@aztec/aztec.js';
-import LinksContractArtifactJson from './links-Links.json' assert { type: 'json' };
-export const LinksContractArtifact = loadContractArtifact(LinksContractArtifactJson as unknown as NoirCompiledContract);
+import EventContractArtifactJson from './event-Event.json' assert { type: 'json' };
+export const EventContractArtifact = loadContractArtifact(EventContractArtifactJson as unknown as unknown as NoirCompiledContract);
 
 /**
- * Type-safe interface for contract Links;
+ * Type-safe interface for contract Event;
  */
-export class LinksContract extends ContractBase {
+export class EventContract extends ContractBase {
   
   private constructor(
     instance: ContractInstanceWithAddress,
     wallet: Wallet,
   ) {
-    super(instance, LinksContractArtifact, wallet);
+    super(instance, EventContractArtifact, wallet);
   }
   
 
@@ -54,36 +54,36 @@ export class LinksContract extends ContractBase {
     address: AztecAddress,
     wallet: Wallet,
   ) {
-    return Contract.at(address, LinksContract.artifact, wallet) as Promise<LinksContract>;
+    return Contract.at(address, EventContract.artifact, wallet) as Promise<EventContract>;
   }
 
   
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, ) {
-    return new DeployMethod<LinksContract>(Fr.ZERO, wallet, LinksContractArtifact, LinksContract.at, Array.from(arguments).slice(1));
+  public static deploy(wallet: Wallet, links_contract: AztecAddressLike) {
+    return new DeployMethod<EventContract>(Fr.ZERO, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public keys hash to derive the address.
    */
-  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, ) {
-    return new DeployMethod<LinksContract>(publicKeysHash, wallet, LinksContractArtifact, LinksContract.at, Array.from(arguments).slice(2));
+  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, links_contract: AztecAddressLike) {
+    return new DeployMethod<EventContract>(publicKeysHash, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(2));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified constructor method.
    */
-  public static deployWithOpts<M extends keyof LinksContract['methods']>(
+  public static deployWithOpts<M extends keyof EventContract['methods']>(
     opts: { publicKeysHash?: Fr; method?: M; wallet: Wallet },
-    ...args: Parameters<LinksContract['methods'][M]>
+    ...args: Parameters<EventContract['methods'][M]>
   ) {
-    return new DeployMethod<LinksContract>(
+    return new DeployMethod<EventContract>(
       opts.publicKeysHash ?? Fr.ZERO,
       opts.wallet,
-      LinksContractArtifact,
-      LinksContract.at,
+      EventContractArtifact,
+      EventContract.at,
       Array.from(arguments).slice(1),
       opts.method ?? 'constructor',
     );
@@ -95,17 +95,21 @@ export class LinksContract extends ContractBase {
    * Returns this contract's artifact.
    */
   public static get artifact(): ContractArtifact {
-    return LinksContractArtifact;
+    return EventContractArtifact;
   }
   
 
-  public static get storage(): ContractStorageLayout<'mock'> {
+  public static get storage(): ContractStorageLayout<'links_contract' | 'proofs'> {
       return {
-        mock: {
+        links_contract: {
       slot: new Fr(1n),
-      typ: "Map<AztecAddress, PublicMutable<AztecAddress, Context>, Context>",
+      typ: "SharedImmutable<AztecAddress, Context>",
+    },
+proofs: {
+      slot: new Fr(2n),
+      typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
     }
-      } as ContractStorageLayout<'mock'>;
+      } as ContractStorageLayout<'links_contract' | 'proofs'>;
     }
     
 
@@ -121,19 +125,10 @@ export class LinksContract extends ContractBase {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   declare public methods: {
     
-    /** constructor() */
-    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** add_link(a: struct, b: struct) */
-    add_link: ((a: AztecAddressLike, b: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** verify(a: struct, c: struct) */
-    verify: ((a: AztecAddressLike, c: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
     /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
     compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** prove_link(me: struct, you: struct) */
-    prove_link: ((me: AztecAddressLike, you: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** constructor(links_contract: struct) */
+    constructor: ((links_contract: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }
