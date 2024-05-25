@@ -99,13 +99,13 @@ export class LinksContract extends ContractBase {
   }
   
 
-  public static get storage(): ContractStorageLayout<'mock'> {
+  public static get storage(): ContractStorageLayout<'links'> {
       return {
-        mock: {
+        links: {
       slot: new Fr(1n),
-      typ: "Map<AztecAddress, PublicMutable<AztecAddress, Context>, Context>",
+      typ: "Map<LinkKey, PrivateMutable<ValueNote, Context>, Context>",
     }
-      } as ContractStorageLayout<'mock'>;
+      } as ContractStorageLayout<'links'>;
     }
     
 
@@ -121,19 +121,19 @@ export class LinksContract extends ContractBase {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   declare public methods: {
     
-    /** constructor() */
-    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
+    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** hash_pending_shield_data(token_id: field, amount: field) */
+    hash_pending_shield_data: ((token_id: FieldLike, amount: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** assert_linked_to(me: struct, you: struct) */
+    assert_linked_to: ((me: AztecAddressLike, you: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** add_link(a: struct, b: struct) */
     add_link: ((a: AztecAddressLike, b: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** verify(a: struct, c: struct) */
-    verify: ((a: AztecAddressLike, c: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
-    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** prove_link(me: struct, you: struct) */
-    prove_link: ((me: AztecAddressLike, you: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** constructor() */
+    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

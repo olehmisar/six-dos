@@ -28,7 +28,7 @@ import {
   WrappedFieldLike,
 } from '@aztec/aztec.js';
 import EventContractArtifactJson from './event-Event.json' assert { type: 'json' };
-export const EventContractArtifact = loadContractArtifact(EventContractArtifactJson as unknown as unknown as NoirCompiledContract);
+export const EventContractArtifact = loadContractArtifact(EventContractArtifactJson as unknown as NoirCompiledContract);
 
 /**
  * Type-safe interface for contract Event;
@@ -61,14 +61,14 @@ export class EventContract extends ContractBase {
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, links_contract: AztecAddressLike) {
+  public static deploy(wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike) {
     return new DeployMethod<EventContract>(Fr.ZERO, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public keys hash to derive the address.
    */
-  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, links_contract: AztecAddressLike) {
+  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike) {
     return new DeployMethod<EventContract>(publicKeysHash, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(2));
   }
 
@@ -99,17 +99,25 @@ export class EventContract extends ContractBase {
   }
   
 
-  public static get storage(): ContractStorageLayout<'links_contract' | 'proofs'> {
+  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'proofs' | 'max_allowed_degree'> {
       return {
-        links_contract: {
+        owner_address: {
       slot: new Fr(1n),
       typ: "SharedImmutable<AztecAddress, Context>",
     },
-proofs: {
+links_contract: {
       slot: new Fr(2n),
+      typ: "SharedImmutable<AztecAddress, Context>",
+    },
+proofs: {
+      slot: new Fr(3n),
       typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
+    },
+max_allowed_degree: {
+      slot: new Fr(4n),
+      typ: "PublicMutable<Field, Context>",
     }
-      } as ContractStorageLayout<'links_contract' | 'proofs'>;
+      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'proofs' | 'max_allowed_degree'>;
     }
     
 
@@ -128,7 +136,10 @@ proofs: {
     /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
     compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** constructor(links_contract: struct) */
-    constructor: ((links_contract: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** assert_degree(friend: struct, friend_degree: field) */
+    assert_degree: ((friend: AztecAddressLike, friend_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** constructor(owner_address: struct, links_contract: struct) */
+    constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }
