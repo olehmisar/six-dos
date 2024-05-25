@@ -8,5 +8,12 @@
     "compile:links": "pnpm compile:_path links Links",
     "compile:event": "pnpm compile:_path event Event",
     "compile:_path": "sh ./scripts/compile-contract.sh"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "@aztec/accounts": "0.41.0",
+    "@aztec/aztec.js": "0.41.0"
   }
 }
