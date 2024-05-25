@@ -6,8 +6,8 @@ import { getPxe } from "../src/sdk";
 async function main() {
   const pxe = await getPxe();
   const [eventOwner] = await getInitialTestAccountsWallets(pxe);
-  const deployer = eventOwner;
   deployerCached.clearAllContractCaches();
-  await deployContracts(deployer);
+  await deployContracts(eventOwner);
+  console.log("owner", eventOwner.getAddress().toString());
 }
 main();
