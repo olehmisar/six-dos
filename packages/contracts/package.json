@@ -1,5 +1,5 @@
 {
-  "name": "contracts",
+  "name": "@six-dos/contracts",
   "private": true,
   "type": "module",
   "version": "1.0.0",
