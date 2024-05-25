@@ -11,10 +11,16 @@ import {
   CardContent,
   CardFooter,
 } from "./ui/card";
+import { useLinks } from "@/hooks/useLinks";
+import { AztecAddress } from "@aztec/aztec.js";
+import { useWallets } from "@/hooks/useWallets";
 
 export const ConnectForm: FC = () => {
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
+
+  const wallets = useWallets();
+  //   const { linkContract } = useLinks(wallets?.alice);
   return (
     <Card>
       <CardHeader>
@@ -36,7 +42,18 @@ export const ConnectForm: FC = () => {
         />
       </CardContent>
       <CardFooter className="flex justify-center">
-        <Button>Submit</Button>
+        <Button
+        //   disabled={address1 === "" || address2 === "" || linkContract == null}
+        //   onClick={() => {
+        //     linkContract?.methods.add_link(
+        //       AztecAddress.fromString(address1),
+        //       AztecAddress.fromString(address2),
+        //       false,
+        //     );
+        //   }}
+        >
+          Submit
+        </Button>
       </CardFooter>
     </Card>
   );

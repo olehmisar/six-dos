@@ -1,40 +1,35 @@
 import {
+  AccountContract,
   Fr,
+  PXE,
   createPXEClient,
   deriveMasterIncomingViewingSecretKey,
 } from "@aztec/aztec.js";
 import { AccountManager } from "@aztec/aztec.js/account";
 import { SingleKeyAccountContract } from "@aztec/accounts/single_key";
-
-const SECRET_KEY = Fr.random();
+import { getInitialTestAccountsWallets } from "@aztec/accounts/testing";
+import { LinksContract } from "@six-dos/contracts/src/links/target/Links";
+import { getPxe } from "@six-dos/contracts/src/sdk";
 
 class PrivateEnv {
-  pxe;
-  accountContract;
-  account: AccountManager;
+  pxe: Promise<PXE>;
 
-  constructor(
-    private secretKey: Fr,
-    private pxeURL: string,
-  ) {
-    this.pxe = createPXEClient(this.pxeURL);
-    const encryptionPrivateKey =
-      deriveMasterIncomingViewingSecretKey(secretKey);
-    this.accountContract = new SingleKeyAccountContract(encryptionPrivateKey);
-    this.account = new AccountManager(
-      this.pxe,
-      this.secretKey,
-      this.accountContract,
-    );
+  constructor() {
+    this.pxe = getPxe();
   }
 
-  async getWallet() {
+  async getWallets() {
     // taking advantage that register is no-op if already registered
-    return await this.account.register();
+    const [eventOwner, alice, bob] = await getInitialTestAccountsWallets(
+      await this.pxe,
+    );
+
+    return {
+      eventOwner,
+      alice,
+      bob,
+    };
   }
 }
 
-export const deployerEnv = new PrivateEnv(
-  SECRET_KEY,
-  process.env.PXE_URL || "http://localhost:8080",
-);
+export const deployerEnv = new PrivateEnv();

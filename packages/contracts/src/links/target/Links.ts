@@ -119,7 +119,7 @@ export class LinksContract extends ContractBase {
   
 
   /** Type-safe wrappers for the public methods exposed by the contract. */
-  public override methods!: {
+  declare  public  methods: {
     
     /** constructor() */
     constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
