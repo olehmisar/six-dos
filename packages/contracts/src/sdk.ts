@@ -20,17 +20,18 @@ export const EVENT_NAME = "event";
 
 export class SixDosSdk {
   constructor(
-    private contracts: {
+    private contracts: () => Promise<{
       links: LinksContract;
       event: EventContract;
-    },
+    }>,
   ) {}
 
   async addLink(from: AccountWallet, to: AztecAddress) {
-    const shouldInit = !(await this.contracts.links.methods
+    const contracts = await this.contracts();
+    const shouldInit = !(await contracts.links.methods
       .link_exists(from.getAddress(), to)
       .simulate()) as boolean;
-    return await this.contracts.links
+    return await contracts.links
       .withWallet(from)
       .methods.add_link(from.getAddress(), to, shouldInit)
       .send()
