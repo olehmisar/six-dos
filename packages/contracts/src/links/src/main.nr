@@ -7,13 +7,9 @@ contract Links {
     use dep::authwit::auth::{assert_current_call_valid_authwit, assert_current_call_valid_authwit_public};
     use dep::aztec::keys::getters::{get_npk_m_hash, get_ivpk_m};
 
-    global MAX_PATH_LEN = 5;
-
     #[aztec(storage)]
     struct Storage {
         links: Map<LinkKey, PrivateMutable<ValueNote>>,
-
-        // proofs: Map<Field, MyStruct>
     }
 
     #[aztec(private)]
@@ -21,35 +17,32 @@ contract Links {
     fn constructor() {}
 
     #[aztec(private)]
-    fn add_link(a: AztecAddress, b: AztecAddress) {
-        assert(context.msg_sender() == a);
+    fn add_link(from: AztecAddress, to: AztecAddress) {
+        // TODO: use authwit
+        assert(context.msg_sender() == from);
 
-        let a_npk_m_hash = get_npk_m_hash(&mut context, a);
-        let key = LinkKey { a, b };
-        let a_ivpk_m = get_ivpk_m(&mut context, a);
+        let a_npk_m_hash = get_npk_m_hash(&mut context, from);
+        let a_ivpk_m = get_ivpk_m(&mut context, from);
+        let key = LinkKey { from, to };
         assert(storage.links.at(key).get_note(false, a_ivpk_m).value == 0);
         storage.links.at(key).replace(&mut ValueNote::new(1, a_npk_m_hash), false, a_ivpk_m);
     }
 
     #[aztec(private)]
-    fn assert_linked_to(me: AztecAddress, you: AztecAddress) {
-        let a_ivpk_m = get_ivpk_m(&mut context, me);
-        assert(storage.links.at(LinkKey { a: me, b: you }).get_note(false, a_ivpk_m).value == 1);
+    fn assert_linked_to(from: AztecAddress, to: AztecAddress) {
+        let a_ivpk_m = get_ivpk_m(&mut context, from);
+        assert(storage.links.at(LinkKey { from, to }).get_note(false, a_ivpk_m).value == 1);
     }
 
     struct LinkKey {
-        a: AztecAddress,
-        b: AztecAddress,
+        from: AztecAddress,
+        to: AztecAddress,
     }
 
     impl ToField for LinkKey {
         fn to_field(self) -> Field {
-            pedersen_hash([self.a.to_field(), self.b.to_field()], 0)
+            pedersen_hash([self.from.to_field(), self.to.to_field()], 0)
         }
-    }
-
-    fn hash_pending_shield_data(token_id: Field, amount: Field) -> pub Field {
-        pedersen_hash([token_id, amount], 0)
     }
 }
 
