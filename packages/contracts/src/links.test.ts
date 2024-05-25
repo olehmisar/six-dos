@@ -23,13 +23,13 @@ describe("Bridge", () => {
     [eventOwner, alice, bob] = await getInitialTestAccountsWallets(pxe);
     const deployer = eventOwner;
     linksContract = await LinksContract.deploy(deployer).send().deployed();
-    // eventContract = await EventContract.deploy(
-    //   deployer,
-    //   eventOwner.getAddress(),
-    //   linksContract.address,
-    // )
-    //   .send()
-    //   .deployed();
+    eventContract = await EventContract.deploy(
+      deployer,
+      eventOwner.getAddress(),
+      linksContract.address,
+    )
+      .send()
+      .deployed();
   });
 
   test("works", async () => {
@@ -38,9 +38,12 @@ describe("Bridge", () => {
   });
 
   async function addLink(from: AccountWallet, to: AztecAddress) {
+    const shouldInit = !(await linksContract.methods
+      .link_exists(from.getAddress(), to)
+      .simulate()) as boolean;
     return await linksContract
       .withWallet(from)
-      .methods.add_link(from.getAddress(), to)
+      .methods.add_link(from.getAddress(), to, shouldInit)
       .send()
       .wait();
   }

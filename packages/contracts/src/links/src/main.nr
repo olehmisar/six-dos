@@ -17,21 +17,31 @@ contract Links {
     fn constructor() {}
 
     #[aztec(private)]
-    fn add_link(from: AztecAddress, to: AztecAddress) {
+    fn add_link(from: AztecAddress, to: AztecAddress, is_init: bool) {
         // TODO: use authwit
         assert(context.msg_sender() == from);
 
         let a_npk_m_hash = get_npk_m_hash(&mut context, from);
         let a_ivpk_m = get_ivpk_m(&mut context, from);
         let key = LinkKey { from, to };
-        assert(storage.links.at(key).get_note(false, a_ivpk_m).value == 0);
-        storage.links.at(key).replace(&mut ValueNote::new(1, a_npk_m_hash), false, a_ivpk_m);
+        let broadcast = false;
+        let mut note = ValueNote::new(1, a_npk_m_hash);
+        if (is_init) {
+            storage.links.at(key).initialize(&mut note, broadcast, a_ivpk_m);
+        } else {
+            assert(storage.links.at(key).get_note(broadcast, a_ivpk_m).value == 0);
+            storage.links.at(key).replace(&mut note, broadcast, a_ivpk_m);
+        }
     }
 
     #[aztec(private)]
     fn assert_linked_to(from: AztecAddress, to: AztecAddress) {
         let a_ivpk_m = get_ivpk_m(&mut context, from);
         assert(storage.links.at(LinkKey { from, to }).get_note(false, a_ivpk_m).value == 1);
+    }
+
+    unconstrained fn link_exists(from: AztecAddress, to: AztecAddress) -> pub bool {
+        storage.links.at(LinkKey { from, to }).is_initialized()
     }
 
     struct LinkKey {
