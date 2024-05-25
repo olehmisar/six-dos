@@ -1,0 +1,11 @@
+{
+  "name": "contracts",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "compile": "pnpm compile:links",
+    "compile:links": "pnpm compile:_path links Links",
+    "compile:_path": "sh ./scripts/compile-contract.sh"
+  }
+}

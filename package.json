@@ -1,6 +1,7 @@
 {
   "name": "six-dos-monorepo",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "typescript": "^5.3.3"
   }
