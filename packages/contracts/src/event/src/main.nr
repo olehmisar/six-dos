@@ -13,8 +13,7 @@ contract Event {
         /// The address of the person who created the event
         owner_address: SharedImmutable<AztecAddress>,
         links_contract: SharedImmutable<AztecAddress>,
-        degree_of: Map<AztecAddress, PrivateMutable<ValueNote>>,
-        max_allowed_degree: PublicMutable<Field>,
+        degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
     }
 
     #[aztec(public)]
@@ -25,16 +24,19 @@ contract Event {
     }
 
     #[aztec(private)]
-    fn assert_degree(associate: AztecAddress, associate_degree: Field) {
+    fn assert_associated_with(associate: AztecAddress, associate_degree: Field) {
         let new_associate = context.msg_sender();
         Links::at(storage.links_contract.read_private()).assert_linked_to(associate, new_associate).call(&mut context);
         let my_degree = associate_degree + 1;
-        // assert(my_degree <= storage.max_allowed_degree.read());
 
+        /////////////////////////////////////////////
+        // ENCRYPT the degree of the new associate //
+        // with the event owner's public key       //
+        /////////////////////////////////////////////
         let owner = storage.owner_address.read_private();
         let owner_npk_m_hash = get_npk_m_hash(&mut context, owner);
         let owner_ivpk_m = get_ivpk_m(&mut context, owner);
-        storage.degree_of.at(new_associate).replace(
+        storage.degree_of.at(new_associate).initialize(
             &mut ValueNote::new(my_degree, owner_npk_m_hash),
             true,
             owner_ivpk_m

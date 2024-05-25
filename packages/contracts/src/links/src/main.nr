@@ -21,11 +21,15 @@ contract Links {
         // TODO: use authwit
         assert(context.msg_sender() == from);
 
+        /////////////////////////////////////////////
+        // ENCRYPT the link with `from` public key //
+        /////////////////////////////////////////////
         let a_npk_m_hash = get_npk_m_hash(&mut context, from);
         let a_ivpk_m = get_ivpk_m(&mut context, from);
         let key = LinkKey { from, to };
         let broadcast = false;
         let mut note = ValueNote::new(1, a_npk_m_hash);
+
         if (is_init) {
             storage.links.at(key).initialize(&mut note, broadcast, a_ivpk_m);
         } else {
