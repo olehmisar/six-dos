@@ -119,11 +119,8 @@ export class LinksContract extends ContractBase {
   
 
   /** Type-safe wrappers for the public methods exposed by the contract. */
-  declare  public  methods: {
+  public override methods!: {
     
-    /** constructor() */
-    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
     /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
     compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
@@ -135,5 +132,8 @@ export class LinksContract extends ContractBase {
 
     /** link_exists(from: struct, to: struct) */
     link_exists: ((from: AztecAddressLike, to: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** constructor() */
+    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

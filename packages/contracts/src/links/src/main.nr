@@ -27,7 +27,7 @@ contract Links {
         let a_npk_m_hash = get_npk_m_hash(&mut context, from);
         let a_ivpk_m = get_ivpk_m(&mut context, from);
         let key = LinkKey { from, to };
-        let broadcast = false;
+        let broadcast = true;
         let mut note = ValueNote::new(1, a_npk_m_hash);
 
         if (is_init) {
@@ -41,7 +41,7 @@ contract Links {
     #[aztec(private)]
     fn assert_linked_to(from: AztecAddress, to: AztecAddress) {
         let a_ivpk_m = get_ivpk_m(&mut context, from);
-        assert(storage.links.at(LinkKey { from, to }).get_note(false, a_ivpk_m).value == 1);
+        assert(storage.links.at(LinkKey { from, to }).get_note(true, a_ivpk_m).value == 1);
     }
 
     unconstrained fn link_exists(from: AztecAddress, to: AztecAddress) -> pub bool {

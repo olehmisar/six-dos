@@ -99,7 +99,7 @@ export class EventContract extends ContractBase {
   }
   
 
-  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'degree_of'> {
+  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_sees_degree_of' | 'i_see_degree_of'> {
       return {
         owner_address: {
       slot: new Fr(1n),
@@ -109,11 +109,15 @@ links_contract: {
       slot: new Fr(2n),
       typ: "SharedImmutable<AztecAddress, Context>",
     },
-degree_of: {
+owner_sees_degree_of: {
       slot: new Fr(3n),
       typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
+    },
+i_see_degree_of: {
+      slot: new Fr(4n),
+      typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
     }
-      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'degree_of'>;
+      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_sees_degree_of' | 'i_see_degree_of'>;
     }
     
 
@@ -129,13 +133,16 @@ degree_of: {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public override methods!: {
     
-    /** assert_associated_with(associate: struct, associate_degree: field) */
-    assert_associated_with: ((associate: AztecAddressLike, associate_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
-    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** owner_get_degree_of(associate: struct) */
+    owner_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** constructor(owner_address: struct, links_contract: struct) */
     constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** assert_associated_with_me(new_associate: struct) */
+    assert_associated_with_me: ((new_associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
+    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

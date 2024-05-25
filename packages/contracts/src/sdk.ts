@@ -37,4 +37,11 @@ export class SixDosSdk {
       .send()
       .wait();
   }
+
+  async getDegreeOf(account: AztecAddress) {
+    const contracts = await this.contracts();
+    return (await contracts.event.methods
+      .owner_get_degree_of(account)
+      .simulate()) as bigint;
+  }
 }

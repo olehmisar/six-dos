@@ -20,13 +20,24 @@ describe("Bridge", () => {
   });
 
   test("works", async () => {
+    const ownerDegree = await sdk.getDegreeOf(eventOwner.getAddress());
+    console.log("ownerDegree", ownerDegree);
     await sdk.addLink(eventOwner, alice.getAddress());
     await sdk.addLink(alice, bob.getAddress());
 
     await contracts.event
-      .withWallet(alice)
-      .methods.assert_associated_with(eventOwner.getAddress(), 0)
+      .withWallet(eventOwner)
+      .methods.assert_associated_with_me(alice.getAddress())
       .send()
       .wait();
+
+    await contracts.event
+      .withWallet(alice)
+      .methods.assert_associated_with_me(bob.getAddress())
+      .send()
+      .wait();
+
+    console.log("alice degree", await sdk.getDegreeOf(alice.getAddress()));
+    console.log("bob degree", await sdk.getDegreeOf(bob.getAddress()));
   });
 });

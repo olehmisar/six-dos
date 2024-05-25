@@ -13,21 +13,44 @@ contract Event {
         /// The address of the person who created the event
         owner_address: SharedImmutable<AztecAddress>,
         links_contract: SharedImmutable<AztecAddress>,
-        degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
+        owner_sees_degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
+        i_see_degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
+    }
+
+    #[aztec(private)]
+    #[aztec(initializer)]
+    fn constructor(owner_address: AztecAddress, links_contract: AztecAddress) {
+        let mut owner_npk_m_hash = get_npk_m_hash(&mut context, owner_address);
+        let mut owner_ivpk_m = get_ivpk_m(&mut context, owner_address);
+        storage.i_see_degree_of.at(owner_address).initialize(
+            &mut ValueNote::new(0, owner_npk_m_hash),
+            true,
+            owner_ivpk_m
+        );
+        storage.owner_sees_degree_of.at(owner_address).initialize(
+            &mut ValueNote::new(0, owner_npk_m_hash),
+            true,
+            owner_ivpk_m
+        );
+
+        Event::at(context.this_address()).constructor_public(owner_address, links_contract).enqueue(&mut context);
     }
 
     #[aztec(public)]
-    #[aztec(initializer)]
-    fn constructor(owner_address: AztecAddress, links_contract: AztecAddress) {
+    #[aztec(internal)]
+    #[aztec(noinitcheck)]
+    fn constructor_public(owner_address: AztecAddress, links_contract: AztecAddress) {
         storage.owner_address.initialize(owner_address);
         storage.links_contract.initialize(links_contract);
     }
 
     #[aztec(private)]
-    fn assert_associated_with(associate: AztecAddress, associate_degree: Field) {
-        let new_associate = context.msg_sender();
-        Links::at(storage.links_contract.read_private()).assert_linked_to(associate, new_associate).call(&mut context);
-        let my_degree = associate_degree + 1;
+    fn assert_associated_with_me(new_associate: AztecAddress) {
+        let current_associate = context.msg_sender();
+        Links::at(storage.links_contract.read_private()).assert_linked_to(current_associate, new_associate).call(&mut context);
+
+        let current_associate_degree = storage.i_see_degree_of.at(current_associate).get_note().value;
+        let new_associate_degree = current_associate_degree + 1;
 
         /////////////////////////////////////////////
         // ENCRYPT the degree of the new associate //
@@ -36,10 +59,22 @@ contract Event {
         let owner = storage.owner_address.read_private();
         let owner_npk_m_hash = get_npk_m_hash(&mut context, owner);
         let owner_ivpk_m = get_ivpk_m(&mut context, owner);
-        storage.degree_of.at(new_associate).initialize(
-            &mut ValueNote::new(my_degree, owner_npk_m_hash),
+        storage.owner_sees_degree_of.at(new_associate).initialize(
+            &mut ValueNote::new(new_associate_degree, owner_npk_m_hash),
             true,
             owner_ivpk_m
         );
+
+        let new_associate_npk_m_hash = get_npk_m_hash(&mut context, new_associate);
+        let new_associate_ivpk_m = get_ivpk_m(&mut context, new_associate);
+        storage.i_see_degree_of.at(new_associate).initialize(
+            &mut ValueNote::new(new_associate_degree, new_associate_npk_m_hash),
+            true,
+            new_associate_ivpk_m
+        );
+    }
+
+    unconstrained fn owner_get_degree_of(associate: AztecAddress) -> pub Field {
+        storage.owner_sees_degree_of.at(associate).view_note().value
     }
 }
