@@ -10,26 +10,28 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Input } from "./ui/input";
+import { useLinks } from "@/hooks/useLinks";
+import { AztecAddress } from "@aztec/aztec.js";
+import { sdk } from "@/sdk";
+import { db } from "@/store";
 
 export const ConnectForm: FC = () => {
-  const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
 
   const wallets = useWallets();
-  //   const { linkContract } = useLinks(wallets?.alice);
+  console.log("alice", wallets?.alice.getAddress().toString());
+  console.log("bob", wallets?.bob.getAddress().toString());
+
+  const { linkContract } = useLinks(wallets?.alice);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Connect friends</CardTitle>
-        <CardDescription>Create a link between two parties</CardDescription>
+        <CardTitle>Connect</CardTitle>
+        <CardDescription>Create a link between two people</CardDescription>
       </CardHeader>
       <CardContent className="gap-4 flex flex-col">
         <p>You</p>
-        <Input
-          placeholder="0x..."
-          value={address1}
-          onChange={(e) => setAddress1(e.target.value)}
-        />
+        <Input disabled value={db.data.address} />
         <p>Friend</p>
         <Input
           placeholder="0x..."
@@ -39,14 +41,15 @@ export const ConnectForm: FC = () => {
       </CardContent>
       <CardFooter className="flex justify-center">
         <Button
-        //   disabled={address1 === "" || address2 === "" || linkContract == null}
-        //   onClick={() => {
-        //     linkContract?.methods.add_link(
-        //       AztecAddress.fromString(address1),
-        //       AztecAddress.fromString(address2),
-        //       false,
-        //     );
-        //   }}
+          disabled={address2 === "" || linkContract == null}
+          onClick={() => {
+            if (wallets?.alice) {
+              sdk.addLink(wallets?.alice, AztecAddress.fromString(address2));
+              db.update((data) => {
+                data.links.push(address2);
+              });
+            }
+          }}
         >
           Submit
         </Button>
