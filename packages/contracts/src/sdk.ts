@@ -50,17 +50,19 @@ export class SixDosSdk {
       .wait();
   }
 
-  async ownerGetDegreeOf(account: AztecAddress) {
+  async ownerGetDegreeOf(owner: AccountWallet, account: AztecAddress) {
     const contracts = await this.contracts();
-    return (await contracts.event.methods
-      .owner_get_degree_of(account)
+    return (await contracts.event
+      .withWallet(owner)
+      .methods.owner_get_degree_of(account)
       .simulate()) as bigint;
   }
 
-  async associateGetDegreeOf(account: AztecAddress) {
+  async associateGetDegreeOf(account: AccountWallet) {
     const contracts = await this.contracts();
-    return (await contracts.event.methods
-      .associate_get_degree_of(account)
+    return (await contracts.event
+      .withWallet(account)
+      .methods.associate_get_degree_of(account.getAddress())
       .simulate()) as bigint;
   }
 }

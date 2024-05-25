@@ -20,15 +20,21 @@ describe("Bridge", () => {
   });
 
   test("works", async () => {
-    const ownerDegree = await sdk.ownerGetDegreeOf(eventOwner.getAddress());
+    const ownerDegree = await sdk.ownerGetDegreeOf(
+      eventOwner,
+      eventOwner.getAddress(),
+    );
     await sdk.addLink(eventOwner, alice.getAddress());
     await sdk.addLink(alice, bob.getAddress());
 
     await sdk.invite(eventOwner, alice.getAddress());
     await sdk.invite(alice, bob.getAddress());
 
-    const aliceDegree = await sdk.ownerGetDegreeOf(alice.getAddress());
-    const bobDegree = await sdk.ownerGetDegreeOf(bob.getAddress());
+    const aliceDegree = await sdk.ownerGetDegreeOf(
+      eventOwner,
+      alice.getAddress(),
+    );
+    const bobDegree = await sdk.ownerGetDegreeOf(eventOwner, bob.getAddress());
     expect(ownerDegree).toBe(0n);
     expect(aliceDegree).toBe(1n);
     expect(bobDegree).toBe(2n);
