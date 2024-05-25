@@ -8,7 +8,8 @@ import { deployerCached } from "./DeployerCached";
 import { EventContract } from "./event/target/Event";
 import { LinksContract } from "./links/target/Links";
 
-const defaultPxeUrl = "http://localhost:8080";
+const defaultPxeUrl =
+  "https://musical-dollop-jrv9x75g6552pgvv-8080.app.github.dev/";
 export async function getPxe({ url = defaultPxeUrl }: { url?: string } = {}) {
   const pxe = createPXEClient(url);
   await waitForPXE(pxe);
