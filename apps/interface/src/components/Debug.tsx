@@ -12,7 +12,7 @@ export const Debug: FC = () => {
   );
 
   return (
-    <Card className="max-w-md">
+    <Card>
       <CardHeader>
         <CardTitle>Debug</CardTitle>
       </CardHeader>
@@ -40,7 +40,7 @@ export const Debug: FC = () => {
         </div>
         <div className="flex flex-col">
           <p>Links</p>
-          {db.data.links.map((link) => (
+          {db.data.links[db.data.address]?.map((link) => (
             <div key={link}>
               <p>{link}</p>
             </div>

@@ -14,15 +14,34 @@ import { useLinks } from "@/hooks/useLinks";
 import { AztecAddress } from "@aztec/aztec.js";
 import { sdk } from "@/sdk";
 import { db } from "@/store";
+import { useMutation } from "@tanstack/react-query";
+import { useWallet } from "@/hooks/useWallet";
 
 export const ConnectForm: FC = () => {
-  const [address2, setAddress2] = useState("");
+  const [friendAddress, setFriendAddress] = useState("");
 
   const wallets = useWallets();
-  console.log("alice", wallets?.alice.getAddress().toString());
-  console.log("bob", wallets?.bob.getAddress().toString());
 
   const { linkContract } = useLinks(wallets?.alice);
+
+  const wallet = useWallet(db.data.address);
+
+  const addLinkMutation = useMutation({
+    mutationFn: async (address2: string) => {
+      if (wallet) {
+        await sdk.addLink(wallet, AztecAddress.fromString(address2));
+        db.update((data) => {
+          if (data.links[data.address] == undefined) {
+            data.links[data.address] = [address2];
+          } else {
+            data.links[data.address]!.push(address2);
+          }
+        });
+      }
+    },
+  });
+
+  console.log("addLinkMutation", addLinkMutation.status);
   return (
     <Card>
       <CardHeader>
@@ -35,23 +54,19 @@ export const ConnectForm: FC = () => {
         <p>Friend</p>
         <Input
           placeholder="0x..."
-          value={address2}
-          onChange={(e) => setAddress2(e.target.value)}
+          value={friendAddress}
+          onChange={(e) => setFriendAddress(e.target.value)}
         />
       </CardContent>
       <CardFooter className="flex justify-center">
         <Button
-          disabled={address2 === "" || linkContract == null}
-          onClick={() => {
-            if (wallets?.alice) {
-              sdk.addLink(wallets?.alice, AztecAddress.fromString(address2));
-              db.update((data) => {
-                data.links.push(address2);
-              });
-            }
-          }}
+          disabled={friendAddress === "" || linkContract == null}
+          onClick={() => addLinkMutation.mutate(friendAddress)}
         >
-          Submit
+          {addLinkMutation.isIdle && "Submit"}
+          {addLinkMutation.isPending && "Submitting..."}
+          {addLinkMutation.isSuccess && "Success!"}
+          {addLinkMutation.isError && "Error!"}
         </Button>
       </CardFooter>
     </Card>

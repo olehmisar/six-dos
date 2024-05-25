@@ -15,10 +15,10 @@ import { AztecAddress } from "@aztec/aztec.js";
 import { sdk } from "@/sdk";
 import { db } from "@/store";
 import { useWallet } from "@/hooks/useWallet";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const EventForm: FC = () => {
-  const [address1, setAddress1] = useState("");
+  const [friendAddress, setFriendAddress] = useState("");
   const wallets = useWallets();
 
   const { linkContract } = useLinks(wallets?.alice);
@@ -51,6 +51,13 @@ export const EventForm: FC = () => {
   console.log("isInvited", isInvited);
   console.log("canInvite", canInvite);
 
+  const inviteMutation = useMutation({
+    mutationFn: async (address: string) => {
+      if (wallet) {
+        await sdk.invite(wallet, AztecAddress.fromString(address));
+      }
+    },
+  });
   return (
     <Card className="max-w-md">
       <CardHeader>
@@ -61,27 +68,29 @@ export const EventForm: FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="gap-4 flex flex-col">
-        <p>RSVP</p>
+        <p>Invite</p>
         <Input
           placeholder="0x..."
-          value={address1}
-          onChange={(e) => setAddress1(e.target.value)}
+          value={friendAddress}
+          onChange={(e) => setFriendAddress(e.target.value)}
         />
       </CardContent>
       <CardFooter className="flex justify-center">
         <Button
           disabled={
-            (address1 === "" || linkContract == null || wallet == null) &&
+            (friendAddress === "" || linkContract == null || wallet == null) &&
             !isInvited &&
             !canInvite
           }
-          onClick={() => {
-            if (wallet != null) {
-              sdk.invite(wallet, AztecAddress.fromString(address1));
-            }
-          }}
+          onClick={() => inviteMutation.mutate(friendAddress)}
         >
-          Submit
+          {(maxDegreeQuery.isLoading || degreeQuery.isLoading) && "Loading..."}
+          {isInvited && canInvite && inviteMutation.isIdle && "Submit"}
+          {!isInvited && "Not invited"}
+          {isInvited && !canInvite && "Can't invite"}
+          {inviteMutation.isPending && "Submitting..."}
+          {inviteMutation.isSuccess && "Success!"}
+          {inviteMutation.isError && "Error!"}
         </Button>
       </CardFooter>
     </Card>
