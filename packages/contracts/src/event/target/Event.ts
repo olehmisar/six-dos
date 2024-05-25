@@ -99,7 +99,7 @@ export class EventContract extends ContractBase {
   }
   
 
-  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_sees_degree_of' | 'i_see_degree_of'> {
+  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_degree_of' | 'associate_degree_of'> {
       return {
         owner_address: {
       slot: new Fr(1n),
@@ -109,15 +109,15 @@ links_contract: {
       slot: new Fr(2n),
       typ: "SharedImmutable<AztecAddress, Context>",
     },
-owner_sees_degree_of: {
+owner_degree_of: {
       slot: new Fr(3n),
       typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
     },
-i_see_degree_of: {
+associate_degree_of: {
       slot: new Fr(4n),
       typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
     }
-      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_sees_degree_of' | 'i_see_degree_of'>;
+      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_degree_of' | 'associate_degree_of'>;
     }
     
 
