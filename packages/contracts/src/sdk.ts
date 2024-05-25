@@ -60,10 +60,14 @@ export class SixDosSdk {
 
   async associateGetDegreeOf(account: AccountWallet) {
     const contracts = await this.contracts();
-    return (await contracts.event
-      .withWallet(account)
-      .methods.associate_get_degree_of(account.getAddress())
-      .simulate()) as bigint;
+    try {
+      return (await contracts.event.methods
+        .associate_get_degree_of(account.getAddress())
+        .simulate()) as bigint;
+    } catch (e) {
+      console.error("associateGetDegreeOf", account.getAddress(), e);
+      return undefined;
+    }
   }
 
   async getMaxAllowedDegree() {
