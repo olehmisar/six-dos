@@ -1,9 +1,6 @@
 contract Event {
     use dep::aztec::prelude::{AztecAddress, PrivateImmutable, PrivateMutable, PublicMutable, SharedImmutable, Map, PrivateSet};
-    use dep::easy_private_state::EasyPrivateUint;
-    use dep::aztec::{hash::compute_secret_hash, note::{note_getter_options::NoteGetterOptions}};
     use dep::value_note::value_note::ValueNote;
-    use dep::authwit::{auth::{assert_current_call_valid_authwit, assert_current_call_valid_authwit_public}};
     use dep::aztec::keys::getters::{get_npk_m_hash, get_ivpk_m};
 
     use dep::links::Links;
@@ -46,7 +43,11 @@ contract Event {
     #[aztec(public)]
     #[aztec(internal)]
     #[aztec(noinitcheck)]
-    fn constructor_public(owner_address: AztecAddress, links_contract: AztecAddress, max_degree: Field) {
+    fn constructor_public(
+        owner_address: AztecAddress,
+        links_contract: AztecAddress,
+        max_degree: Field
+    ) {
         storage.owner_address.initialize(owner_address);
         storage.links_contract.initialize(links_contract);
         storage.max_degree.initialize(max_degree);
@@ -103,6 +104,4 @@ contract Event {
         // It's encrypted, so associates can only see their own degree of separation
         storage.associate_degree_of.at(associate).view_note().value
     }
-
-
 }

@@ -1,10 +1,7 @@
 contract Links {
-    use dep::aztec::prelude::{AztecAddress, PrivateImmutable, PrivateMutable, PublicMutable, Map, PrivateSet, NoteHeader, PrivateContext};
+    use dep::aztec::prelude::{AztecAddress, PrivateImmutable, PrivateMutable, PublicMutable, Map, PrivateSet};
     use dep::aztec::protocol_types::{hash::pedersen_hash, traits::ToField};
-    use dep::easy_private_state::EasyPrivateUint;
     use dep::value_note::value_note::ValueNote;
-    use dep::aztec::{hash::compute_secret_hash, note::note_getter_options::NoteGetterOptions};
-    use dep::authwit::auth::{assert_current_call_valid_authwit, assert_current_call_valid_authwit_public};
     use dep::aztec::keys::getters::{get_npk_m_hash, get_ivpk_m};
 
     #[aztec(storage)]
