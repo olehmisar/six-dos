@@ -16,7 +16,7 @@ describe("Bridge", () => {
     [eventOwner, alice, bob] = await getInitialTestAccountsWallets(pxe);
     const deployer = eventOwner;
     contracts = await deployContracts(deployer);
-    sdk = new SixDosSdk(contracts);
+    sdk = new SixDosSdk(async () => contracts);
   });
 
   test("works", async () => {

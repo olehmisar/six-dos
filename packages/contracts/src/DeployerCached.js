@@ -94,6 +94,9 @@ const inMemoryStorage = {
    * @returns {string | null}
    */
   getItem(key) {
+    if (!fs.existsSync(filename)) {
+      return null;
+    }
     try {
       return JSON.parse(fs.readFileSync(filename, "utf8"))[key] ?? null;
     } catch (e) {
