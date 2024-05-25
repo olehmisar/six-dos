@@ -4,9 +4,7 @@ import {
   createPXEClient,
   waitForPXE,
 } from "@aztec/aztec.js";
-import { deployerCached } from "./DeployerCached";
-import { EventContract } from "./event/target/Event";
-import { LinksContract } from "./links/target/Links";
+import type { deployContracts } from "./deployContracts";
 
 const defaultPxeUrl =
   "https://musical-dollop-jrv9x75g6552pgvv-8080.app.github.dev/";
@@ -18,12 +16,18 @@ export async function getPxe({ url = defaultPxeUrl }: { url?: string } = {}) {
 
 export const LINKS_NAME = "links";
 export const EVENT_NAME = "event";
-export async function getContracts(account: AccountWallet) {
-  const links = await deployerCached.getContractCached(LINKS_NAME, (address) =>
-    LinksContract.at(AztecAddress.fromString(address), account),
-  );
-  const event = await deployerCached.getContractCached(EVENT_NAME, (address) =>
-    EventContract.at(AztecAddress.fromString(address), account),
-  );
-  return { links, event };
+
+export class SixDosSdk {
+  constructor(private contracts: Awaited<ReturnType<typeof deployContracts>>) {}
+
+  async addLink(from: AccountWallet, to: AztecAddress) {
+    const shouldInit = !(await this.contracts.links.methods
+      .link_exists(from.getAddress(), to)
+      .simulate()) as boolean;
+    return await this.contracts.links
+      .withWallet(from)
+      .methods.add_link(from.getAddress(), to, shouldInit)
+      .send()
+      .wait();
+  }
 }
