@@ -65,4 +65,9 @@ export class SixDosSdk {
       .methods.associate_get_degree_of(account.getAddress())
       .simulate()) as bigint;
   }
+
+  async getMaxAllowedDegree() {
+    const contracts = await this.contracts();
+    return (await contracts.event.methods.max_degree().simulate()) as bigint;
+  }
 }

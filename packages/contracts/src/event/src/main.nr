@@ -86,6 +86,12 @@ contract Event {
         );
     }
 
+    #[aztec(public)]
+    #[aztec(view)]
+    fn max_degree() -> pub Field {
+        storage.max_degree.read_public()
+    }
+
     unconstrained fn owner_get_degree_of(associate: AztecAddress) -> pub Field {
         // Owner can see the degree of separation of all associates. This function will revert if the caller is not the owner.
         storage.owner_degree_of.at(associate).view_note().value
@@ -95,4 +101,6 @@ contract Event {
         // It's encrypted, so associates can only see their own degree of separation
         storage.associate_degree_of.at(associate).view_note().value
     }
+
+
 }
