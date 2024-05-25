@@ -38,10 +38,17 @@ export class SixDosSdk {
       .wait();
   }
 
-  async getDegreeOf(account: AztecAddress) {
+  async ownerGetDegreeOf(account: AztecAddress) {
     const contracts = await this.contracts();
     return (await contracts.event.methods
       .owner_get_degree_of(account)
+      .simulate()) as bigint;
+  }
+
+  async associateGetDegreeOf(account: AztecAddress) {
+    const contracts = await this.contracts();
+    return (await contracts.event.methods
+      .associate_get_degree_of(account)
       .simulate()) as bigint;
   }
 }

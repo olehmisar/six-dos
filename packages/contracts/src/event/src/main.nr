@@ -12,14 +12,19 @@ contract Event {
     struct Storage {
         /// The address of the person who created the event
         owner_address: SharedImmutable<AztecAddress>,
+        /// The address of the Links contract that verifies the association between people
         links_contract: SharedImmutable<AztecAddress>,
+        /// Owner can see degrees of separation of all associates to the owner
         owner_degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
+        /// Associates can see their own degree of separation to the owner
         associate_degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
+        /// Up to what degree of separation can the people join the event
+        max_degree: SharedImmutable<Field>,
     }
 
     #[aztec(private)]
     #[aztec(initializer)]
-    fn constructor(owner_address: AztecAddress, links_contract: AztecAddress) {
+    fn constructor(owner_address: AztecAddress, links_contract: AztecAddress, max_degree: Field) {
         let mut owner_npk_m_hash = get_npk_m_hash(&mut context, owner_address);
         let mut owner_ivpk_m = get_ivpk_m(&mut context, owner_address);
         // ENCRYPT BOTH with the owner's public key
@@ -34,15 +39,16 @@ contract Event {
             owner_ivpk_m
         );
 
-        Event::at(context.this_address()).constructor_public(owner_address, links_contract).enqueue(&mut context);
+        Event::at(context.this_address()).constructor_public(owner_address, links_contract, max_degree).enqueue(&mut context);
     }
 
     #[aztec(public)]
     #[aztec(internal)]
     #[aztec(noinitcheck)]
-    fn constructor_public(owner_address: AztecAddress, links_contract: AztecAddress) {
+    fn constructor_public(owner_address: AztecAddress, links_contract: AztecAddress, max_degree: Field) {
         storage.owner_address.initialize(owner_address);
         storage.links_contract.initialize(links_contract);
+        storage.max_degree.initialize(max_degree);
     }
 
     #[aztec(private)]
@@ -52,6 +58,7 @@ contract Event {
 
         let current_associate_degree = storage.associate_degree_of.at(current_associate).get_note().value;
         let new_associate_degree = current_associate_degree + 1;
+        assert(new_associate_degree as u64 <= storage.max_degree.read_private() as u64);
 
         /////////////////////////////////////////////
         // ENCRYPT the degree of the new associate //
@@ -80,6 +87,12 @@ contract Event {
     }
 
     unconstrained fn owner_get_degree_of(associate: AztecAddress) -> pub Field {
+        // Owner can see the degree of separation of all associates. This function will revert if the caller is not the owner.
         storage.owner_degree_of.at(associate).view_note().value
+    }
+
+    unconstrained fn associate_get_degree_of(associate: AztecAddress) -> pub Field {
+        // It's encrypted, so associates can only see their own degree of separation
+        storage.associate_degree_of.at(associate).view_note().value
     }
 }

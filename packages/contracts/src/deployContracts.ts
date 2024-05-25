@@ -10,11 +10,17 @@ export async function deployContracts(account: AccountWallet) {
     (address) => LinksContract.at(address, account),
     () => LinksContract.deploy(account).send(),
   );
+  const maxDegree = 2; // friends of friends only
   const event = await deployerCached.deployContractCached(
     EVENT_NAME,
     (address) => EventContract.at(address, account),
     () =>
-      EventContract.deploy(account, account.getAddress(), links.address).send(),
+      EventContract.deploy(
+        account,
+        account.getAddress(),
+        links.address,
+        maxDegree,
+      ).send(),
   );
   return { links, event };
 }

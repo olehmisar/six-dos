@@ -20,7 +20,7 @@ describe("Bridge", () => {
   });
 
   test("works", async () => {
-    const ownerDegree = await sdk.getDegreeOf(eventOwner.getAddress());
+    const ownerDegree = await sdk.ownerGetDegreeOf(eventOwner.getAddress());
     console.log("ownerDegree", ownerDegree);
     await sdk.addLink(eventOwner, alice.getAddress());
     await sdk.addLink(alice, bob.getAddress());
@@ -37,7 +37,7 @@ describe("Bridge", () => {
       .send()
       .wait();
 
-    console.log("alice degree", await sdk.getDegreeOf(alice.getAddress()));
-    console.log("bob degree", await sdk.getDegreeOf(bob.getAddress()));
+    console.log("alice degree", await sdk.ownerGetDegreeOf(alice.getAddress()));
+    console.log("bob degree", await sdk.ownerGetDegreeOf(bob.getAddress()));
   });
 });
