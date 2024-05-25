@@ -38,6 +38,18 @@ export class SixDosSdk {
       .wait();
   }
 
+  /**
+   *  We invite the person by asserting that they are associated with us. The degree is checked on-chain.
+   */
+  async invite(from: AccountWallet, to: AztecAddress) {
+    const contracts = await this.contracts();
+    return await contracts.event
+      .withWallet(from)
+      .methods.assert_associated_with_me(to)
+      .send()
+      .wait();
+  }
+
   async ownerGetDegreeOf(account: AztecAddress) {
     const contracts = await this.contracts();
     return (await contracts.event.methods

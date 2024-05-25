@@ -1,6 +1,6 @@
 import { getInitialTestAccountsWallets } from "@aztec/accounts/testing";
 import { type AccountWallet, type PXE } from "@aztec/aztec.js";
-import { beforeAll, describe, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { deployContracts } from "./deployContracts.js";
 import { EventContract } from "./event/target/Event.js";
 import { LinksContract } from "./links/target/Links.js";
@@ -21,23 +21,16 @@ describe("Bridge", () => {
 
   test("works", async () => {
     const ownerDegree = await sdk.ownerGetDegreeOf(eventOwner.getAddress());
-    console.log("ownerDegree", ownerDegree);
     await sdk.addLink(eventOwner, alice.getAddress());
     await sdk.addLink(alice, bob.getAddress());
 
-    await contracts.event
-      .withWallet(eventOwner)
-      .methods.assert_associated_with_me(alice.getAddress())
-      .send()
-      .wait();
+    await sdk.invite(eventOwner, alice.getAddress());
+    await sdk.invite(alice, bob.getAddress());
 
-    await contracts.event
-      .withWallet(alice)
-      .methods.assert_associated_with_me(bob.getAddress())
-      .send()
-      .wait();
-
-    console.log("alice degree", await sdk.ownerGetDegreeOf(alice.getAddress()));
-    console.log("bob degree", await sdk.ownerGetDegreeOf(bob.getAddress()));
+    const aliceDegree = await sdk.ownerGetDegreeOf(alice.getAddress());
+    const bobDegree = await sdk.ownerGetDegreeOf(bob.getAddress());
+    expect(ownerDegree).toBe(0n);
+    expect(aliceDegree).toBe(1n);
+    expect(bobDegree).toBe(2n);
   });
 });
