@@ -25,7 +25,7 @@ const App = () => {
             onClick={() => setTab("attendance")}
             className="text-xl font-bold text-center px-2 py-1 bg-slate-50 hover:bg-slate-200 border rounded-lg cursor-default"
           >
-            Attendance
+            Event
           </div>
           <div
             onClick={() => setTab("debug")}
