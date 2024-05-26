@@ -11,6 +11,8 @@ contract Event {
         owner_address: SharedImmutable<AztecAddress>,
         /// The address of the Links contract that verifies the association between people
         links_contract: SharedImmutable<AztecAddress>,
+        /// We only check if link exists, so we use the BoolModule
+        links_module: SharedImmutable<AztecAddress>,
         /// Owner can see degrees of separation of all associates to the owner
         owner_degree_of: Map<AztecAddress, PrivateImmutable<ValueNote>>,
         /// Associates can see their own degree of separation to the owner
@@ -21,7 +23,12 @@ contract Event {
 
     #[aztec(private)]
     #[aztec(initializer)]
-    fn constructor(owner_address: AztecAddress, links_contract: AztecAddress, max_degree: Field) {
+    fn constructor(
+        owner_address: AztecAddress,
+        links_contract: AztecAddress,
+        links_module: AztecAddress,
+        max_degree: Field
+    ) {
         let broadcast = true;
         let mut owner_npk_m_hash = get_npk_m_hash(&mut context, owner_address);
         let mut owner_ivpk_m = get_ivpk_m(&mut context, owner_address);
@@ -37,7 +44,7 @@ contract Event {
             owner_ivpk_m
         );
 
-        Event::at(context.this_address()).constructor_public(owner_address, links_contract, max_degree).enqueue(&mut context);
+        Event::at(context.this_address()).constructor_public(owner_address, links_contract, links_module, max_degree).enqueue(&mut context);
     }
 
     #[aztec(public)]
@@ -46,17 +53,23 @@ contract Event {
     fn constructor_public(
         owner_address: AztecAddress,
         links_contract: AztecAddress,
+        links_module: AztecAddress,
         max_degree: Field
     ) {
         storage.owner_address.initialize(owner_address);
         storage.links_contract.initialize(links_contract);
+        storage.links_module.initialize(links_module);
         storage.max_degree.initialize(max_degree);
     }
 
     #[aztec(private)]
     fn assert_associated_with_me(new_associate: AztecAddress) {
         let current_associate = context.msg_sender();
-        Links::at(storage.links_contract.read_private()).assert_linked_to(current_associate, new_associate).call(&mut context);
+        Links::at(storage.links_contract.read_private()).assert_linked_to(
+            current_associate,
+            new_associate,
+            storage.links_module.read_private()
+        ).call(&mut context);
 
         let current_associate_degree = storage.associate_degree_of.at(current_associate).get_note().value;
         let new_associate_degree = current_associate_degree + 1;
@@ -93,6 +106,12 @@ contract Event {
     #[aztec(view)]
     fn max_degree() -> pub Field {
         storage.max_degree.read_public()
+    }
+
+    #[aztec(public)]
+    #[aztec(view)]
+    fn links_module() -> pub AztecAddress {
+        storage.links_module.read_public()
     }
 
     unconstrained fn owner_get_degree_of(associate: AztecAddress) -> pub Field {

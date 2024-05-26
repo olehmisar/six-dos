@@ -61,14 +61,14 @@ export class EventContract extends ContractBase {
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike, max_degree: FieldLike) {
+  public static deploy(wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike, links_module: AztecAddressLike, max_degree: FieldLike) {
     return new DeployMethod<EventContract>(Fr.ZERO, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public keys hash to derive the address.
    */
-  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike, max_degree: FieldLike) {
+  public static deployWithPublicKeysHash(publicKeysHash: Fr, wallet: Wallet, owner_address: AztecAddressLike, links_contract: AztecAddressLike, links_module: AztecAddressLike, max_degree: FieldLike) {
     return new DeployMethod<EventContract>(publicKeysHash, wallet, EventContractArtifact, EventContract.at, Array.from(arguments).slice(2));
   }
 
@@ -99,7 +99,7 @@ export class EventContract extends ContractBase {
   }
   
 
-  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_degree_of' | 'associate_degree_of' | 'max_degree'> {
+  public static get storage(): ContractStorageLayout<'owner_address' | 'links_contract' | 'links_module' | 'owner_degree_of' | 'associate_degree_of' | 'max_degree'> {
       return {
         owner_address: {
       slot: new Fr(1n),
@@ -109,50 +109,60 @@ links_contract: {
       slot: new Fr(2n),
       typ: "SharedImmutable<AztecAddress, Context>",
     },
-owner_degree_of: {
+links_module: {
       slot: new Fr(3n),
-      typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
+      typ: "SharedImmutable<AztecAddress, Context>",
     },
-associate_degree_of: {
+owner_degree_of: {
       slot: new Fr(4n),
       typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
     },
-max_degree: {
+associate_degree_of: {
       slot: new Fr(5n),
+      typ: "Map<AztecAddress, PrivateImmutable<ValueNote, Context>, Context>",
+    },
+max_degree: {
+      slot: new Fr(6n),
       typ: "SharedImmutable<Field, Context>",
     }
-      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'owner_degree_of' | 'associate_degree_of' | 'max_degree'>;
+      } as ContractStorageLayout<'owner_address' | 'links_contract' | 'links_module' | 'owner_degree_of' | 'associate_degree_of' | 'max_degree'>;
     }
     
 
-  public static get notes(): ContractNotes<'ValueNote'> {
+  public static get notes(): ContractNotes<'AddressNote' | 'ValueNote'> {
     return {
-      ValueNote: {
+      AddressNote: {
+          id: new Fr(6510010011410111511578111116101n),
+        },
+ValueNote: {
           id: new Fr(869710811710178111116101n),
         }
-    } as ContractNotes<'ValueNote'>;
+    } as ContractNotes<'AddressNote' | 'ValueNote'>;
   }
   
 
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public override methods!: {
     
+    /** links_module() */
+    links_module: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
     /** associate_get_degree_of(associate: struct) */
     associate_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** assert_associated_with_me(new_associate: struct) */
-    assert_associated_with_me: ((new_associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** max_degree() */
-    max_degree: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** constructor(owner_address: struct, links_contract: struct, max_degree: field) */
-    constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike, max_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
+    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** owner_get_degree_of(associate: struct) */
     owner_get_degree_of: ((associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
-    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** max_degree() */
+    max_degree: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** assert_associated_with_me(new_associate: struct) */
+    assert_associated_with_me: ((new_associate: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** constructor(owner_address: struct, links_contract: struct, links_module: struct, max_degree: field) */
+    constructor: ((owner_address: AztecAddressLike, links_contract: AztecAddressLike, links_module: AztecAddressLike, max_degree: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

@@ -1,10 +1,18 @@
 import { AccountWallet } from "@aztec/aztec.js";
 import { deployerCached } from "./DeployerCached";
+import { BoolModuleContract } from "./bool_module/target/BoolModule";
 import { EventContract } from "./event/target/Event";
 import { LinksContract } from "./links/target/Links";
-import { EVENT_NAME, LINKS_NAME } from "./sdk";
 
+const LINKS_NAME = "links";
+const EVENT_NAME = "event";
+const BOOL_MODULE_NAME = "boolModule";
 export async function deployContracts(account: AccountWallet) {
+  const boolModule = await deployerCached.deployContractCached(
+    BOOL_MODULE_NAME,
+    (address) => BoolModuleContract.at(address, account),
+    () => BoolModuleContract.deploy(account).send(),
+  );
   const links = await deployerCached.deployContractCached(
     LINKS_NAME,
     (address) => LinksContract.at(address, account),
@@ -19,8 +27,9 @@ export async function deployContracts(account: AccountWallet) {
         account,
         account.getAddress(),
         links.address,
+        boolModule.address,
         maxDegree,
       ).send(),
   );
-  return { links, event };
+  return { links, event, boolModule };
 }

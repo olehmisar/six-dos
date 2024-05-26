@@ -5,9 +5,10 @@
   "version": "1.0.0",
   "scripts": {
     "test": "pnpm i && pnpm vitest run",
-    "compile": "pnpm compile:links && pnpm compile:event",
+    "compile": "pnpm compile:bool-module && pnpm compile:links && pnpm compile:event",
     "compile:links": "pnpm compile:_path links Links",
     "compile:event": "pnpm compile:_path event Event",
+    "compile:bool-module": "pnpm compile:_path bool_module BoolModule",
     "compile:_path": "sh ./scripts/compile-contract.sh"
   },
   "devDependencies": {

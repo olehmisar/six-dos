@@ -8,8 +8,6 @@ import {
 } from "@aztec/aztec.js";
 import { beforeAll, describe, expect, test } from "vitest";
 import { deployContracts } from "./deployContracts.js";
-import { EventContract } from "./event/target/Event.js";
-import { LinksContract } from "./links/target/Links.js";
 import { SixDosSdk, getPxe } from "./sdk.js";
 
 describe("Bridge", () => {
@@ -19,7 +17,6 @@ describe("Bridge", () => {
     bob: AccountWallet,
     charlie: AccountWallet;
   let random: AccountWallet;
-  let contracts: { links: LinksContract; event: EventContract };
   let sdk: SixDosSdk;
   beforeAll(async () => {
     pxe = await getPxe();
@@ -27,7 +24,7 @@ describe("Bridge", () => {
     charlie = await createAccount(pxe);
     random = await createAccount(pxe);
     const deployer = eventOwner;
-    contracts = await deployContracts(deployer);
+    const contracts = await deployContracts(deployer);
     sdk = new SixDosSdk(async () => contracts);
   });
 

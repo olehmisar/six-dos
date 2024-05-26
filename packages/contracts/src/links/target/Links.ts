@@ -103,7 +103,7 @@ export class LinksContract extends ContractBase {
       return {
         links: {
       slot: new Fr(1n),
-      typ: "Map<LinkKey, PrivateMutable<ValueNote, Context>, Context>",
+      typ: "Map<LinkKey, PrivateMutable<AddressNote, Context>, Context>",
     }
       } as ContractStorageLayout<'links'>;
     }
@@ -124,19 +124,19 @@ ValueNote: {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public override methods!: {
     
-    /** constructor() */
-    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** assert_linked_to(from: struct, to: struct) */
-    assert_linked_to: ((from: AztecAddressLike, to: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
-    /** link_exists(from: struct, to: struct) */
-    link_exists: ((from: AztecAddressLike, to: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
     /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, note_type_id: field, serialized_note: array) */
     compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, note_type_id: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** add_link(to: struct, is_init: boolean) */
-    add_link: ((to: AztecAddressLike, is_init: boolean) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** link_is_initialized(from: struct, to: struct, module: struct) */
+    link_is_initialized: ((from: AztecAddressLike, to: AztecAddressLike, module: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** add_link(to: struct, module: struct, is_init: boolean) */
+    add_link: ((to: AztecAddressLike, module: AztecAddressLike, is_init: boolean) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** assert_linked_to(from: struct, to: struct, module: struct) */
+    assert_linked_to: ((from: AztecAddressLike, to: AztecAddressLike, module: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** constructor() */
+    constructor: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }
