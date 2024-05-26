@@ -61,12 +61,19 @@ export class SixDosSdk {
   async associateGetDegreeOf(account: AccountWallet) {
     const contracts = await this.contracts();
     try {
-      return (await contracts.event.methods
+      const result = (await contracts.event.methods
         .associate_get_degree_of(account.getAddress())
         .simulate()) as bigint;
+
+        return {
+          degree: result,
+          isInvited: true,
+        }
     } catch (e) {
-      console.error("associateGetDegreeOf", account.getAddress(), e);
-      return undefined;
+      console.log("associateGetDegreeOf", account.getAddress(), e);
+      return {
+        isInvited: false
+      };
     }
   }
 

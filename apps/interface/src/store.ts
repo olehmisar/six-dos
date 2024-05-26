@@ -5,10 +5,10 @@ type Data = {
   links: Record<string, string[] | undefined>;
 };
 
-const defaultData: Data = {
-  address: "0x06df9120d88244aac6a6df8562e40a09fecea46c6938548683aa707a81d3c8ee",
+export const defaultData: Data = {
+  address: "0x14f7a3f6de857d54350353673d1a0f76afc35bd06e22079bc44a8c9fe61cf51e",
   links: {
-    "0x06df9120d88244aac6a6df8562e40a09fecea46c6938548683aa707a81d3c8ee": [],
+    "0x14f7a3f6de857d54350353673d1a0f76afc35bd06e22079bc44a8c9fe61cf51e": [],
   },
 };
 export const db = LocalStoragePreset<Data>("db", defaultData);

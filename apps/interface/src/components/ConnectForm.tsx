@@ -60,7 +60,11 @@ export const ConnectForm: FC = () => {
       </CardContent>
       <CardFooter className="flex justify-center">
         <Button
-          disabled={friendAddress === "" || linkContract == null}
+          disabled={
+            friendAddress === "" ||
+            linkContract == null ||
+            addLinkMutation.isPending
+          }
           onClick={() => addLinkMutation.mutate(friendAddress)}
         >
           {addLinkMutation.isIdle && "Submit"}

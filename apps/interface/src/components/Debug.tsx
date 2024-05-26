@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Input } from "./ui/input";
-import { db } from "@/store";
+import { db, defaultData } from "@/store";
 
 export const Debug: FC = () => {
   const [myAddress, setMyAddress] = useState(
@@ -19,7 +19,16 @@ export const Debug: FC = () => {
       <CardContent className="gap-4 flex flex-col">
         <div className="gap-2 flex flex-row items-center justify-between">
           <p className="whitespace-nowrap">Clear DB</p>
-          <Button>Ok</Button>
+          <Button
+            onClick={() =>
+              db.update((data) => {
+                data.address = defaultData.address;
+                data.links = defaultData.links;
+              })
+            }
+          >
+            Ok
+          </Button>
         </div>
         <div className="gap-2 flex flex-row items-center justify-between">
           <p className="whitespace-nowrap">Set address</p>

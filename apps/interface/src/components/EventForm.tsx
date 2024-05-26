@@ -28,8 +28,7 @@ export const EventForm: FC = () => {
   const degreeQuery = useQuery({
     queryKey: ["degree", wallet?.getAddress().toString()],
     queryFn: async () => {
-      const degree = await sdk.associateGetDegreeOf(wallet!);
-      return degree;
+      return await sdk.associateGetDegreeOf(wallet!);
     },
     enabled: wallet != null,
   });
@@ -42,11 +41,12 @@ export const EventForm: FC = () => {
     },
   });
 
-  const isInvited = degreeQuery.data != null && degreeQuery.data >= 0;
+  const isInvited = degreeQuery.data != null && degreeQuery.data.isInvited;
   const canInvite =
     maxDegreeQuery.data != null &&
     degreeQuery.data != null &&
-    degreeQuery.data < maxDegreeQuery.data;
+    degreeQuery.data.degree != null &&
+    degreeQuery.data.degree < maxDegreeQuery.data;
 
   console.log("isInvited", isInvited);
   console.log("canInvite", canInvite);
@@ -73,6 +73,7 @@ export const EventForm: FC = () => {
           placeholder="0x..."
           value={friendAddress}
           onChange={(e) => setFriendAddress(e.target.value)}
+          disabled={!isInvited || !canInvite}
         />
       </CardContent>
       <CardFooter className="flex justify-center">
@@ -86,8 +87,13 @@ export const EventForm: FC = () => {
         >
           {(maxDegreeQuery.isLoading || degreeQuery.isLoading) && "Loading..."}
           {isInvited && canInvite && inviteMutation.isIdle && "Submit"}
-          {!isInvited && "Not invited"}
-          {isInvited && !canInvite && "Can't invite"}
+          {!(maxDegreeQuery.isLoading || degreeQuery.isLoading) &&
+            !isInvited &&
+            "Not invited"}
+          {!(maxDegreeQuery.isLoading || degreeQuery.isLoading) &&
+            isInvited &&
+            !canInvite &&
+            "Can't invite"}
           {inviteMutation.isPending && "Submitting..."}
           {inviteMutation.isSuccess && "Success!"}
           {inviteMutation.isError && "Error!"}
