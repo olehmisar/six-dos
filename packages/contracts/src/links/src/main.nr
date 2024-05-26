@@ -56,28 +56,3 @@ contract Links {
         }
     }
 }
-
-/*
-later in an app
-
-contract Event {
-    struct Storage {
-        allowed_guests:
-    }
-    #[aztec(private)]
-    fn prove_
-}
-
-
-
-    // #[aztec(private)]
-    // fn prove_path(path: [AztecAddress; MAX_PATH_LEN]) {
-    //     for i in 0..MAX_PATH_LEN {
-    //         if path[i] != 0 {
-    //             assert(storage.links.at(path[i]).at(path[i + 1]).read() == 1);
-    //         }
-    //     }
-    // }
-
-
-*/
