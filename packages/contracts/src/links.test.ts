@@ -18,12 +18,14 @@ describe("Bridge", () => {
     alice: AccountWallet,
     bob: AccountWallet,
     charlie: AccountWallet;
+  let random: AccountWallet;
   let contracts: { links: LinksContract; event: EventContract };
   let sdk: SixDosSdk;
   beforeAll(async () => {
     pxe = await getPxe();
     [eventOwner, alice, bob] = await getInitialTestAccountsWallets(pxe);
     charlie = await createAccount(pxe);
+    random = await createAccount(pxe);
     const deployer = eventOwner;
     contracts = await deployContracts(deployer);
     sdk = new SixDosSdk(async () => contracts);
@@ -54,6 +56,18 @@ describe("Bridge", () => {
   test("fails if degree is too high", async () => {
     await expect(sdk.invite(bob, charlie.getAddress())).rejects.toThrow(
       "Cannot satisfy constraint",
+    );
+  });
+
+  test('fails if "from" is not a link', async () => {
+    await expect(sdk.invite(random, bob.getAddress())).rejects.toThrow(
+      "Failed to solve brillig function",
+    );
+  });
+
+  test('fails if "to" is not a link', async () => {
+    await expect(sdk.invite(bob, random.getAddress())).rejects.toThrow(
+      "Failed to solve brillig function",
     );
   });
 });
