@@ -27,14 +27,11 @@ const App = () => {
           >
             Event
           </div>
-          <div
-            onClick={() => setTab("debug")}
-            className="text-xl font-bold text-center px-2 py-1 bg-slate-50 hover:bg-slate-200 border rounded-lg cursor-default"
-          >
-            Debug
-          </div>
         </div>
-        <div className="text-center px-2 py-1 bg-slate-50 hover:bg-slate-200 border rounded-lg cursor-default">
+        <div
+          onClick={() => setTab("debug")}
+          className="text-center px-2 py-1 bg-slate-50 hover:bg-slate-200 border rounded-lg cursor-default"
+        >
           {address.slice(0, 6) + "..." + address.slice(-4)}
         </div>
       </div>
